@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confirmation — Section JSP Vaulnaveys</title>
+<!--
+  Landing page of the Supabase confirmation links (signup & email change).
+
+  Why it exists: the verify endpoint consumes the token server-side, then redirects.
+  Redirecting straight to the app scheme (jsp38://) is blocked by many mail webviews,
+  so the user lands on a dead page and thinks the confirmation failed. Redirecting
+  here instead always works (HTTPS), and the "Ouvrir l'application" button relays the
+  session fragment to the app through a user gesture — reliable on every browser.
+
+  Hosting: any static host (GitHub Pages, Netlify…). See supabase/README.md.
+-->
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: #F4F0EC; color: #1C1A19;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 24px;
+  }
+  .card {
+    width: 100%; max-width: 420px;
+    background: #fff; border: 1px solid rgba(28,26,25,.09); border-radius: 18px;
+    padding: 28px 24px; text-align: center;
+    box-shadow: 0 14px 28px -20px rgba(28,26,25,.4);
+  }
+  .logo {
+    width: 72px; height: 72px; margin: 0 auto 18px; border-radius: 20px;
+    background: #B71C1C; border: 2px solid #7F0000;
+    display: flex; align-items: center; justify-content: center; font-size: 36px;
+  }
+  h1 {
+    font-size: 22px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .02em; font-stretch: condensed;
+  }
+  p { margin-top: 10px; font-size: 14px; line-height: 1.55; color: #6B6462; }
+  .ok    h1 { color: #2E7D32; }
+  .error h1 { color: #C62828; }
+  a.open {
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 22px; height: 52px; border-radius: 14px;
+    background: #B71C1C; color: #fff; text-decoration: none;
+    font-weight: 700; font-size: 15px;
+    box-shadow: 0 14px 26px -14px rgba(183,28,28,.8);
+  }
+  .hint { margin-top: 14px; font-size: 11.5px; color: #8A817D; }
+</style>
+</head>
+<body>
+  <div class="card" id="card">
+    <div class="logo">🚒</div>
+    <div id="content"></div>
+  </div>
+
+<script>
+  // The verify endpoint puts either the session or the error in the URL fragment.
+  var hash = window.location.hash.replace(/^#/, '');
+  var params = new URLSearchParams(hash);
+  var card = document.getElementById('card');
+  var content = document.getElementById('content');
+
+  if (params.get('error')) {
+    var code = params.get('error_code') || '';
+    var reason = code === 'otp_expired'
+      ? 'Ce lien a expiré ou a déjà été utilisé.'
+      : (params.get('error_description') || 'Le lien n’a pas pu être vérifié.');
+    card.className = 'card error';
+    content.innerHTML =
+      '<h1>Lien invalide</h1>' +
+      '<p>' + reason + '</p>' +
+      '<p>Reconnectez-vous dans l’application : si votre adresse est déjà confirmée, ' +
+      'tout est en ordre. Sinon, demandez un nouveau lien.</p>';
+  } else {
+    card.className = 'card ok';
+    content.innerHTML =
+      '<h1>Adresse confirmée ✅</h1>' +
+      '<p>Votre adresse e-mail est vérifiée. Votre compte sera activé après validation ' +
+      'par l’encadrement de la section.</p>' +
+      '<a class="open" id="openApp" href="jsp38://auth-callback">Ouvrir l’application</a>' +
+      '<p class="hint">Si le bouton ne répond pas, ouvrez simplement l’application ' +
+      'JSP Vaulnaveys sur votre téléphone.</p>';
+    // Relay the session fragment so the app signs the user in directly.
+    if (hash) document.getElementById('openApp').href = 'jsp38://auth-callback#' + hash;
+  }
+</script>
+</body>
+</html>
