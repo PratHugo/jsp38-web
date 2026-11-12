@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Confirmation — Section JSP Vaulnaveys</title>
+<title>Confirmation — JSP 38</title>
 <!--
   Landing page of the Supabase confirmation links (signup & email change).
 
@@ -75,11 +75,13 @@
       ? 'Ce lien a expiré ou a déjà été utilisé.'
       : (params.get('error_description') || 'Le lien n’a pas pu être vérifié.');
     card.className = 'card error';
+    // The reason comes from the URL: it is written as text, never parsed as HTML.
     content.innerHTML =
       '<h1>Lien invalide</h1>' +
-      '<p>' + reason + '</p>' +
+      '<p id="reason"></p>' +
       '<p>Reconnectez-vous dans l’application : si votre adresse est déjà confirmée, ' +
       'tout est en ordre. Sinon, demandez un nouveau lien.</p>';
+    document.getElementById('reason').textContent = reason;
   } else {
     card.className = 'card ok';
     content.innerHTML =
@@ -88,7 +90,7 @@
       'par l’encadrement de la section.</p>' +
       '<a class="open" id="openApp" href="' + appLink + '">Ouvrir l’application</a>' +
       '<p class="hint">Si le bouton ne répond pas, ouvrez simplement l’application ' +
-      'JSP Vaulnaveys sur votre téléphone.</p>';
+      'JSP 38 sur votre téléphone.</p>';
     // Relay the session fragment so the app signs the user in directly.
     if (hash) document.getElementById('openApp').href = appLink + '#' + hash;
   }
