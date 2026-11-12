@@ -59,6 +59,10 @@
   </div>
 
 <script>
+  // The development app has its own scheme: its links land on `confirmation.html?app=dev`.
+  var isDev = new URLSearchParams(window.location.search).get('app') === 'dev';
+  var appLink = (isDev ? 'jsp38dev' : 'jsp38') + '://auth-callback';
+
   // The verify endpoint puts either the session or the error in the URL fragment.
   var hash = window.location.hash.replace(/^#/, '');
   var params = new URLSearchParams(hash);
@@ -82,11 +86,11 @@
       '<h1>Adresse confirmée ✅</h1>' +
       '<p>Votre adresse e-mail est vérifiée. Votre compte sera activé après validation ' +
       'par l’encadrement de la section.</p>' +
-      '<a class="open" id="openApp" href="jsp38://auth-callback">Ouvrir l’application</a>' +
+      '<a class="open" id="openApp" href="' + appLink + '">Ouvrir l’application</a>' +
       '<p class="hint">Si le bouton ne répond pas, ouvrez simplement l’application ' +
       'JSP Vaulnaveys sur votre téléphone.</p>';
     // Relay the session fragment so the app signs the user in directly.
-    if (hash) document.getElementById('openApp').href = 'jsp38://auth-callback#' + hash;
+    if (hash) document.getElementById('openApp').href = appLink + '#' + hash;
   }
 </script>
 </body>
